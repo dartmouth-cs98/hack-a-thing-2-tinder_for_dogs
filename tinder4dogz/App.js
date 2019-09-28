@@ -1,14 +1,11 @@
 import React from 'react';
-import { StyleSheet, Text, View, Dimensions, Animated, Image, PanResponder } from 'react-native';
+import { StyleSheet, Text, View, Dimensions, Animated, Image, PanResponder, TouchableWithoutFeedback, Alert } from 'react-native';
 
 const SCREEN_HEIGHT = Dimensions.get('window').height
 const SCREEN_WIDTH = Dimensions.get('window').width
 const Users = [
-  {id: "1", uri: require('./assets/1.jpg')},
-  {id: "2", uri: require('./assets/2.jpg')},
-  {id: "3", uri: require('./assets/3.jpg')},
-  {id: "4", uri: require('./assets/4.jpg')},
-  {id: "5", uri: require('./assets/5.jpg')}
+  {id: "1", pics: [require('./assets/1.jpg'), require('./assets/2.jpg')]},
+  {id: "2", pics: [require('./assets/3.jpg'), require('./assets/4.jpg'), require('./assets/5.jpg')]}
 ]
 
 export default class App extends React.Component {
@@ -18,7 +15,8 @@ export default class App extends React.Component {
 
     this.position = new Animated.ValueXY()
     this.state = {
-      currentIndex: 0
+      currentIndex: 0,
+      currentProfileIndex: 0
     }
 
     this.rotate = this.position.x.interpolate({
@@ -59,9 +57,14 @@ export default class App extends React.Component {
       extrapolate: 'clamp',
     })
   }
+
   componentWillMount() {
     this.PanResponder = PanResponder.create({
-      onStartShouldSetPanResponder:(evt, gestureState) => true,
+      onStartShouldSetPanResponder:(evt, gestureState) => false,
+      onMoveShouldSetPanResponder : (evt, gestureState) => {
+        const {dx, dy} = gestureState;
+        return (Math.abs(dx) > 20) || (Math.abs(dy) > 20);
+      },
       onPanResponderMove:(evt, gestureState) => {
         this.position.setValue({x:gestureState.dx, y:gestureState.dy})
       }, 
@@ -70,7 +73,7 @@ export default class App extends React.Component {
           Animated.spring(this.position, {
             toValue: { x: SCREEN_WIDTH + 100, y: gestureState.dy }
           }).start(() => {
-            this.setState({ currentIndex: this.state.currentIndex + 1}, () => {
+            this.setState({ currentIndex: this.state.currentIndex + 1, currentProfileIndex: 0}, () => {
               this.position.setValue({ x: 0, y: 0})
             })
           })
@@ -78,7 +81,7 @@ export default class App extends React.Component {
           Animated.spring(this.position, {
             toValue: { x: -SCREEN_WIDTH - 100, y: gestureState.dy }
           }).start(() => {
-            this.setState({ currentIndex: this.state.currentIndex + 1}, () => {
+            this.setState({ currentIndex: this.state.currentIndex + 1, currentProfileIndex: 0}, () => {
               this.position.setValue({ x: 0, y: 0})
             })
           })
@@ -90,6 +93,18 @@ export default class App extends React.Component {
         }
       }
     })
+  }
+
+  changePic = (item) => {
+    if (this.state.currentProfileIndex < item.pics.length - 1) {
+      this.setState(prevState => ({
+        currentProfileIndex: prevState.currentProfileIndex + 1
+      }))
+    } else {
+      this.setState({
+        currentProfileIndex: 0
+      })
+    }
   }
 
   renderUsers = () => {
@@ -112,10 +127,12 @@ export default class App extends React.Component {
               <Text style={{ borderRadius: 5, borderWidth: 1, borderColor: 'red', color: 'red', fontSize: 32, fontWeight: '800', padding: 10}}>NOPE</Text>
             </Animated.View>
 
-            <Image
-              style={{flex:1, height:null, width:null, resizeMode:'cover', borderRadius: 20}}
-              source={item.uri}
-            />
+            <TouchableWithoutFeedback onPress={() => this.changePic(item)}>
+              <Animated.Image
+                style={{flex:1, height:null, width:null, resizeMode:'cover', borderRadius: 20}}
+                source={item.pics[this.state.currentProfileIndex]}
+              />
+            </TouchableWithoutFeedback>
           </Animated.View>
         )
       } else {
@@ -133,7 +150,7 @@ export default class App extends React.Component {
           >
             <Image
               style={{flex:1, height:null, width:null, resizeMode:'cover', borderRadius: 20}}
-              source={item.uri}
+              source={item.pics[this.state.currentProfileIndex]}
             />
           </Animated.View>
         )
