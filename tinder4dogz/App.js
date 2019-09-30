@@ -11,13 +11,18 @@ const pic2 = require('./assets/2.jpg');
 const pic3 = require('./assets/3.jpg');
 const pic4 = require('./assets/4.jpg');
 const pic5 = require('./assets/5.jpg');
+const pic6 = require('./assets/pitty.jpg');
+const pic7 = require('./assets/pitty2.jpg');
 
 const Users = [
     {
         id: '1', pics: [pic1, pic2], humanName: 'Alice', dogName: ['Fido', 'Alf'], bio: 'Let\'s go on a walk!',
     },
     {
-        id: '2', pics: [pic3, pic4, pic5], humanName: 'Bob', dogName: ['Charlie', 'Seth', 'Edith'], bio: 'My dogs rule...',
+        id: '2', pics: [pic3, pic4, pic5], humanName: 'Bob', dogName: ['Carl', 'Seth', 'Edith'], bio: 'My dogs rule...',
+    },
+    {
+        id: '3', pics: [pic6, pic7], humanName: 'Charlie', dogName: ['Pitty'], bio: 'Pitbulls are my favorite dog.',
     },
 ];
 
