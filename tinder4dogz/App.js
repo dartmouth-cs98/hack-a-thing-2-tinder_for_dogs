@@ -1,5 +1,7 @@
 import React from 'react';
-import { StyleSheet, Text, View, Dimensions, Animated, Image, PanResponder, TouchableWithoutFeedback, Alert } from 'react-native';
+import { StyleSheet, Text, View, Dimensions, Animated, Image, PanResponder, TouchableWithoutFeedback, Button } from 'react-native';
+import {createAppContainer} from 'react-navigation';
+import {createStackNavigator} from 'react-navigation-stack';
 
 const SCREEN_HEIGHT = Dimensions.get('window').height
 const SCREEN_WIDTH = Dimensions.get('window').width
@@ -8,7 +10,19 @@ const Users = [
   {id: "2", pics: [require('./assets/3.jpg'), require('./assets/4.jpg'), require('./assets/5.jpg')]}
 ]
 
-export default class App extends React.Component {
+// export default class App extends React.Component {
+class HomeScreen extends React.Component {
+  static navigationOptions = ({ navigation }) => {
+    return {
+      headerTitle: "Tinder4Dogs",
+      headerRight: (
+        <Button
+          title="Profile"
+          onPress={() => navigation.navigate('Profile', {name: 'Jane'})}
+        />
+      ),
+    };
+  };
 
   constructor() {
     super()
@@ -108,7 +122,6 @@ export default class App extends React.Component {
   }
 
   renderUsers = () => {
-
     return Users.map((item, i) => {
       if (i < this.state.currentIndex) {
         return null
@@ -174,6 +187,28 @@ export default class App extends React.Component {
     );
   }
 }
+
+class ProfileScreen extends React.Component {
+  static navigationOptions = {
+    title: 'Welcome',
+  };
+  render() {
+    const {navigate} = this.props.navigation;
+    return (
+      <Button
+        title="Go to Jane's profile"
+        onPress={() => navigate('Profile', {name: 'Jane'})}
+      />
+    );
+  }
+}
+
+const MainNavigator = createStackNavigator({
+  Home: {screen: HomeScreen},
+  Profile: {screen: ProfileScreen},
+});
+const App = createAppContainer(MainNavigator);
+export default App;
 
 const styles = StyleSheet.create({
   container: {
