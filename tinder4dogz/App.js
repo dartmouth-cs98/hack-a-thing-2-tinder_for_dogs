@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-    Animated, Dimensions, Image, Modal, PanResponder, StyleSheet, Text, TouchableWithoutFeedback, View,
+    Animated, Dimensions, Image, PanResponder, StyleSheet, Text, TouchableWithoutFeedback, View,
 } from 'react-native';
 import { Header, Icon } from 'react-native-elements';
 
@@ -113,7 +113,7 @@ export default class App extends React.Component {
     // eslint-disable-next-line react/no-deprecated
     componentWillMount() {
         this.PanResponder = PanResponder.create({
-            onStartShouldSetPanResponder: (_evt, _gestureState) => true,
+            onStartShouldSetPanResponder: (_evt, _gestureState) => false,
             onMoveShouldSetPanResponder: (_evt, gestureState) => {
                 const { dx, dy } = gestureState;
                 return (Math.abs(dx) > 20) || (Math.abs(dy) > 20);
@@ -134,7 +134,7 @@ export default class App extends React.Component {
                         toValue: { x: SCREEN_WIDTH + 100, y: gestureState.dy },
                     }).start(() => {
                         this.setState({
-                            currentIndex: currentIndex + 1,
+                            currentIndex: currentIndex === Users.length - 1 ? 0 : currentIndex + 1,
                             currentProfileIndex: 0,
                         }, () => {
                             this.position.setValue({ x: 0, y: 0 });
@@ -145,7 +145,7 @@ export default class App extends React.Component {
                         toValue: { x: -SCREEN_WIDTH - 100, y: gestureState.dy },
                     }).start(() => {
                         this.setState({
-                            currentIndex: currentIndex + 1,
+                            currentIndex: currentIndex === Users.length - 1 ? 0 : currentIndex + 1,
                             currentProfileIndex: 0,
                         },
                         () => {
@@ -178,7 +178,7 @@ export default class App extends React.Component {
     nextProf = () => {
         const { currentIndex } = this.state;
         this.setState({
-            currentIndex: currentIndex + 1,
+            currentIndex: currentIndex === Users.length - 1 ? 0 : currentIndex + 1,
             currentProfileIndex: 0,
         },
         () => {
@@ -201,65 +201,53 @@ export default class App extends React.Component {
             return (
                 <View
                     style={{
-                        height: 275,
+                        flex: 0,
                     }}
                 >
-                    <Modal
-                        animationType="slide"
-                        visible={showBio}
-                        transparent
+                    <View
+                        style={styles.title}
                     >
-                        <View
-                            style={{
-                                paddingTop: Dimensions.get('window').height - 300,
-                            }}
-                        >
-                            <View
-                                style={styles.title}
-                            >
-                                <Text style={styles.name}>
-                                    {item.humanName}
-                                </Text>
-                                <Icon
-                                    name="arrow-up"
-                                    type="font-awesome"
-                                    color="#e75480"
-                                    reverse
-                                    onPress={this.hideBio}
-                                />
-                            </View>
-                            <Text style={styles.dogs}>
-                        Doggos:
-                                {' '}
-                                {item.dogName.join(', ')}
-                            </Text>
-                            <Text style={styles.bio}>
-                                {item.bio}
-                            </Text>
-                            <View
-                                style={{
-                                    display: 'flex',
-                                    flexDirection: 'row',
-                                    justifyContent: 'center',
-                                }}
-                            >
-                                <Icon
-                                    name="check"
-                                    type="font-awesome"
-                                    color="green"
-                                    reverse
-                                    onPress={this.nextProf}
-                                />
-                                <Icon
-                                    name="times"
-                                    type="font-awesome"
-                                    color="red"
-                                    reverse
-                                    onPress={this.nextProf}
-                                />
-                            </View>
-                        </View>
-                    </Modal>
+                        <Text style={styles.name}>
+                            {item.humanName}
+                        </Text>
+                        <Icon
+                            name="arrow-up"
+                            type="font-awesome"
+                            color="#e75480"
+                            reverse
+                            onPress={this.hideBio}
+                        />
+                    </View>
+                    <Text style={styles.dogs}>
+                                Doggos:
+                        {' '}
+                        {item.dogName.join(', ')}
+                    </Text>
+                    <Text style={styles.bio}>
+                        {item.bio}
+                    </Text>
+                    <View
+                        style={{
+                            display: 'flex',
+                            flexDirection: 'row',
+                            justifyContent: 'center',
+                        }}
+                    >
+                        <Icon
+                            name="check"
+                            type="font-awesome"
+                            color="green"
+                            reverse
+                            onPress={this.nextProf}
+                        />
+                        <Icon
+                            name="times"
+                            type="font-awesome"
+                            color="red"
+                            reverse
+                            onPress={this.nextProf}
+                        />
+                    </View>
                 </View>
             );
         } else {
