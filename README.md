@@ -2,9 +2,12 @@
 By Sean Hawkins and Anna Matusewicz
 
 ## How to run
-`cd tinder4dogz`
-`yarn`
-`expo start`
+```
+cd tinder4dogz
+yarn
+expo start
+```
+
 Open the iOS simulator and enjoy!
 
 ## Short description of what we built
