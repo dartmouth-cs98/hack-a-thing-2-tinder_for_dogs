@@ -1,9 +1,11 @@
 import React from 'react';
-import { StyleSheet, Text, View, Dimensions, Animated, Image, PanResponder, TouchableWithoutFeedback, Button, ScrollView } from 'react-native';
-import {createAppContainer} from 'react-navigation';
-import {createStackNavigator} from 'react-navigation-stack';
+import {
+    StyleSheet, Text, View, Dimensions, Animated, Image, PanResponder, TouchableWithoutFeedback, Button,
+} from 'react-native';
+import { createAppContainer } from 'react-navigation';
+import { createStackNavigator } from 'react-navigation-stack';
 import { Header, Icon } from 'react-native-elements';
-import { Hoshi } from 'react-native-textinput-effects';
+import ProfileScreen from './ProfileScreen';
 
 const SCREEN_HEIGHT = Dimensions.get('window').height;
 const SCREEN_WIDTH = Dimensions.get('window').width;
@@ -14,7 +16,6 @@ const pic4 = require('./assets/4.jpg');
 const pic5 = require('./assets/5.jpg');
 const pic6 = require('./assets/pitty.jpg');
 const pic7 = require('./assets/pitty2.jpg');
-const pic8 = require('./assets/propic.jpg');
 
 const Users = [
     {
@@ -65,21 +66,52 @@ const styles = StyleSheet.create({
         margin: 10,
         bottom: 0,
     },
+    dot: {
+        width: 10,
+        height: 10,
+        borderRadius: 5,
+    },
+    dotActive: {
+        backgroundColor: '#e75480',
+        margin: 5,
+    },
+    dotInactive: {
+        backgroundColor: '#D2D2D4',
+        margin: 5,
+    },
+    dotsContainer: {
+        position: 'absolute',
+        zIndex: 50,
+        margin: 10,
+        width: '100%',
+        display: 'flex',
+        flexDirection: 'row',
+        justifyContent: 'center',
+    },
 });
 
-// export default class App extends React.Component {
+// Obtained from https://medium.com/4thought-studios/styling-react-native-components-12daecb612cb
+// Dots to denote picture in series
+const Dot = (props) => {
+    const currentStyle = props.active ? styles.dotActive : styles.dotInactive;
+    return (
+        <View style={[styles.dot, currentStyle]} />
+    );
+};
+
 class HomeScreen extends React.Component {
     static navigationOptions = ({ navigation }) => {
         return {
-        headerTitle: "Tinder4Dogs",
-        headerRight: (
-            <Button
-            title="Profile"
-            onPress={() => navigation.navigate('Profile', {name: 'Jane'})}
-            />
-        ),
+            headerTitle: 'Tinder4Dogs',
+            headerRight: (
+                <Button
+                    title="Profile"
+                    onPress={() => navigation.navigate('Profile', { name: 'Jane' })}
+                />
+            ),
         };
     };
+
     constructor() {
         super();
 
@@ -280,6 +312,17 @@ class HomeScreen extends React.Component {
         }
     }
 
+    renderDots = (item) => {
+        const dots = [];
+        let i;
+        for (i = 0; i < item.pics.length; i += 1) {
+            const active = i === this.state.currentProfileIndex;
+            dots.push(<Dot active={active} key={i} />);
+        }
+
+        return <View style={styles.dotsContainer}>{dots}</View>;
+    }
+
     renderUsers = () => {
         const { currentIndex, currentProfileIndex } = this.state;
         return Users.map((item, i) => {
@@ -352,6 +395,7 @@ class HomeScreen extends React.Component {
                                 source={item.pics[currentProfileIndex]}
                             />
                         </TouchableWithoutFeedback>
+                        {this.renderDots(item)}
                         {this.renderBio(item)}
                     </Animated.View>
                 );
@@ -381,18 +425,19 @@ class HomeScreen extends React.Component {
     }
 
     render() {
-        const {navigate} = this.props.navigation;
+        const { navigate } = this.props.navigation;
         return (
             <View style={{ flex: 1 }}>
                 <Header
                     leftComponent={{ icon: 'menu', color: '#fff' }}
                     centerComponent={{ text: 'Tinder4Dogz', style: { color: '#fff', fontSize: 20 } }}
-                    rightComponent={
-                        <Button title="Profile"
-                            color='#fff'
-                            onPress={() => navigate('Profile', {name: 'Jane'})}>
-                        </Button>
-                    }
+                    rightComponent={(
+                        <Button
+                            title="Profile"
+                            color="#fff"
+                            onPress={() => navigate('Profile', { name: 'Jane' })}
+                        />
+                    )}
                     backgroundColor="#e75480"
                 />
                 <View style={{ flex: 1 }}>
@@ -404,64 +449,12 @@ class HomeScreen extends React.Component {
     }
 }
 
-class ProfileScreen extends React.Component {
-    static navigationOptions = {
-        title: 'Profile',
-    };
-    constructor() {
-        super();
-        this.state = {
-            text: "test",
-        };
-    }
-    render() {
-        const {navigate} = this.props.navigation;
-        return (
-            <View 
-                style={{
-                    flex: 1, padding: 1, alignItems: 'center'
-                }}
-            >
-                <ScrollView>
-                    <Image
-                        style={{
-                            flex: 1, height: 200, width: 200, resizeMode: 'cover', borderRadius: 20,
-                        }}
-                        source={pic8}
-                    />
-                    <Hoshi
-                        label={'Name'}
-                        borderColor={'#e75480'}
-                        borderHeight={3}
-                    />
-                    <Hoshi
-                        label={'Dog(s\') Name(s)'}
-                        borderColor={'#e75480'}
-                        borderHeight={3}
-                    />
-                    <Hoshi
-                        label={'Neighborhood'}
-                        borderColor={'#e75480'}
-                        borderHeight={3}
-                    />
-                    <Hoshi
-                        label={'Desired Distance'}
-                        borderColor={'#e75480'}
-                        borderHeight={3}
-                    />
-                </ScrollView>
-            </View>
-        );
-    }
-}
-
 const MainNavigator = createStackNavigator({
-    Home: {screen: HomeScreen,       
-        navigationOptions: {
-            header: null,}
-        },
-    Profile: {screen: ProfileScreen},
+    Home: {
+        screen: HomeScreen,
+        navigationOptions: { header: null },
+    },
+    Profile: { screen: ProfileScreen },
 });
 const App = createAppContainer(MainNavigator);
 export default App;
-
